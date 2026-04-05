@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://caseymich86.github.io/deep-research/sitemap.xml

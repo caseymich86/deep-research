@@ -2,6 +2,7 @@
 title: "Artemis II: First Crewed Moon Mission Since Apollo"
 date: 2026-04-02
 excerpt: "At 4:12 AM on April 1, 2026, a rocket carrying four astronauts pierced the sky at Kennedy Space Center, embarking on a 10-day journey to the Moon — the first crewed flight beyond low Earth orbit in 53 years."
+description: "Artemis II launched the first crewed Moon mission in 53 years. Deep research on the crew, the SLS rocket, and what it means for lunar exploration."
 tags:
   - Artemis II
   - NASA

@@ -1,0 +1,79 @@
+name: Validate Posts
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate post front matter
+        run: |
+          python3 << 'EOF'
+          import os, sys, re
+
+          posts_dir = "_posts"
+          if not os.path.isdir(posts_dir):
+              print("No _posts/ directory found")
+              sys.exit(0)
+
+          errors = []
+          for fname in sorted(os.listdir(posts_dir)):
+              if not fname.endswith(".md"):
+                  continue
+              path = os.path.join(posts_dir, fname)
+              with open(path) as f:
+                  content = f.read()
+
+              # Check front matter delimiters
+              if not content.startswith("---"):
+                  errors.append((fname, "missing opening ---"))
+                  continue
+              parts = content.split("---", 2)
+              if len(parts) < 3:
+                  errors.append((fname, "missing closing ---"))
+                  continue
+
+              fm = parts[1]
+
+              # Parse fields manually (no PyYAML dependency needed)
+              def get_field(name):
+                  m = re.search(r'^' + name + r':\s*["\']?(.+?)["\']?\s*$', fm, re.MULTILINE)
+                  return m.group(1).strip() if m else None
+
+              title = get_field("title")
+              if not title:
+                  errors.append((fname, "title missing or empty"))
+              elif title.startswith("Deep Dive:"):
+                  errors.append((fname, "title starts with 'Deep Dive:'"))
+
+              desc = get_field("description")
+              if not desc:
+                  errors.append((fname, "description missing or empty"))
+              elif len(desc) > 160:
+                  errors.append((fname, f"description too long ({len(desc)} chars, max 160)"))
+
+              date = get_field("date")
+              if not date:
+                  errors.append((fname, "date missing"))
+
+              # Check for at least 1 tag
+              tag_match = re.search(r'^tags:\s*\n((?:\s+-\s+.+\n)+)', fm, re.MULTILINE)
+              if not tag_match:
+                  # Also accept inline tags: [tag1, tag2]
+                  inline_match = re.search(r'^tags:\s*\[.+\]', fm, re.MULTILINE)
+                  if not inline_match:
+                      errors.append((fname, "no tags found"))
+
+          if errors:
+              print(f"FAILED: {len(errors)} issues in {len(set(e[0] for e in errors))} files\n")
+              for fname, msg in errors:
+                  print(f"  {fname}: {msg}")
+              sys.exit(1)
+          else:
+              count = len([f for f in os.listdir(posts_dir) if f.endswith(".md")])
+              print(f"OK: {count} posts validated")
+          EOF

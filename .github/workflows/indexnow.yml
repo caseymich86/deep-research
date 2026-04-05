@@ -1,0 +1,24 @@
+name: IndexNow Submit
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM UTC daily
+  workflow_dispatch:       # Manual trigger
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate IndexNow key file
+        run: echo "${{ secrets.INDEXNOW_KEY }}" > "${{ secrets.INDEXNOW_KEY }}.txt"
+
+      - name: Submit to IndexNow
+        uses: bojieyang/indexnow-action@v2
+        with:
+          sitemap-location: 'https://caseymich86.github.io/deep-research/sitemap.xml'
+          key: ${{ secrets.INDEXNOW_KEY }}
+          since: 1
+          since-unit: day
+          endpoint: api.indexnow.org

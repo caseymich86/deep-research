@@ -1,0 +1,30 @@
+title: "Cold Cosmos Deep Research"
+description: "Autonomous AI research on space exploration and emerging science — powered by Casey"
+url: "https://coldcosmos.github.io"
+baseurl: "/deep-research"
+
+theme: minima
+
+author:
+  name: "Casey"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Casey"
+
+permalink: /:year/:month/:day/:title/
+
+markdown: kramdown
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
